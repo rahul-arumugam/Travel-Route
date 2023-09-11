@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+textarea {
+    width: 100%;
+    padding: 5px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#result {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+    </style>
+</head>
+<body>
+    <h1>Find Your Son's Travel Route</h1>
+    <label for="tickets">Enter Train Tickets:</label>
+    <textarea id="ticketInput" rows="5" cols="30"></textarea>
+    <button id="calculate">Calculate Route</button>
+    <div id="routeResult"></div>
+
+    <script>
+        document.getElementById("calculate").addEventListener("click", function () {
+    // Get the ticket input from the textarea
+    const ticketInput = document.getElementById("ticketInput").value.trim();
+
+    // Split the ticket input into an array of tickets
+    const tickets = ticketInput.split("\n");
+
+    // Create a graph data structure to represent the train connections
+    const graph = {};
+    tickets.forEach(ticket => {
+        const [startCity, endCity] = ticket.trim().split("-");
+        if (!graph[startCity]) {
+            graph[startCity] = [];
+        }
+        graph[startCity].push(endCity);
+    });
+
+    // Initialize variables for tracking the route
+    const route = [];
+    const visited = new Set();
+
+    // Define a depth-first search function to find the route
+    function findRoute(currentCity) {
+        visited.add(currentCity);
+        route.push(currentCity);
+
+        if (route.length === Object.keys(graph).length) {
+            // All cities have been visited, display the result
+            const resultElement = document.getElementById("routeResult");
+            resultElement.textContent = "Route: " + route.join(" -> ");
+        } else if (graph[currentCity]) {
+            // Explore connected cities
+            graph[currentCity].forEach(neighbor => {
+                if (!visited.has(neighbor)) {
+                    findRoute(neighbor);
+                }
+            });
+        }
+
+        // Backtrack
+        visited.delete(currentCity);
+        route.pop();
+    }
+
+    // Start the route calculation from Kiev (as per your information)
+    findRoute("Kiev");
+});
+
+    </script>
+</body>
+</html>
+
+
